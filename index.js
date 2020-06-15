@@ -1,33 +1,45 @@
-const pupppeteer= require('puppeteer');
+const puppeteer= require('puppeteer');
 
 async function getBunnies(){
-  const browser= await pupppeteer.launch({
-      headless:false,
-      defaultViewport:null
-  });
-
+  const browser = await puppeteer.launch({
+    headless: false,   
+    args: [ '--start-maximized', '--window-size=1920,1080' ],
+    defaultViewport: null
+});
   const page = await browser.newPage();
+  // Pass the User-Agent Test.
+  const userAgent = 'Mozilla/5.0 (X11; Linux x86_64)' + 'AppleWebKit/537.36 (KHTML, like Gecko) Chrome/64.0.3282.39 Safari/537.36';
+  await page.setUserAgent(userAgent);
+
 
   // Configure the navigation timeout
   await page.setDefaultNavigationTimeout(0);
   
   // Goto plagriasm checker website
-  await page.goto('https://www.duplichecker.com');
+  await page.goto('https://duplichecker.com');
 
-  await page.waitForNavigation({  waitUntil: 'networkidle0' });  
+  await page.waitForSelector("#textBox", { visible: true });
 
-  console.log('Open a new page');
 
+  const input =  await page.$$("#textBox");
+  
   // Paste our article inside the textarea
   const article = 'BDD stands for Behaviour Driven Development. And TDD stands for Test Driven Development. These are actually not alternatives, even if they are thrown a lot into conversations these days.'+
     'TDD is a way to write code, irrespective of the architecture we implement. BDD is a variation of TDD with Behavioral approach to it. So these are not going to help us in implementing an architecture style.' +
     'Although TDD does help set good standards and forces us to move away from the constraints of MVC as the application grows. We can actually follow TDD with implementing any architecture we want. So they go hand in hand instead of as an alternative.';
-   
-  await page.type('input[id=textBox]', 'test comment', {delay: 20});  
-  console.log('Set the textarea with text')
 
-  // // Click the Check plagiarism button  
-  // await page.$eval('input[type=submit]', el => el.click());
+  await page.$eval('#textBox', el => el.value = "BDD stands for Behaviour Driv");
+
+  // Click the Check plagiarism button  
+  console.log("O' Favour!!  11");
+
+  await page.$eval(".g-recaptcha", el => {
+      console.log(el);
+      el.click();
+  });
+
+  console.log("O' Favour!!");
+
 
   // console.log('Submit form');
 
